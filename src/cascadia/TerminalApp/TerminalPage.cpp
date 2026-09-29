@@ -3500,9 +3500,10 @@ namespace winrt::TerminalApp::implementation
                     }
                 }
             }
+            const auto profile = _settings.GetProfileForArgs(newTerminalArgs);
             if (url.empty())
             {
-                if (const auto profile = _settings.GetProfileForArgs(newTerminalArgs))
+                if (profile)
                 {
                     url = profile.Commandline();
                 }
@@ -3511,7 +3512,7 @@ namespace winrt::TerminalApp::implementation
             {
                 existingConnection.Close();
             }
-            const auto browser = winrt::make_self<BrowserPaneContent>(url);
+            const auto browser = winrt::make_self<BrowserPaneContent>(url, _settings, profile.Guid());
             browser->NewTabRequested([weak = get_weak()](const auto&, const winrt::hstring& target) {
                 if (const auto page = weak.get())
                 {

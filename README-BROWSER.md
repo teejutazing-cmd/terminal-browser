@@ -24,9 +24,13 @@ Keep all its files together in a writable directory. Settings are stored in
 
 ## What is reused
 
-The upstream XAML files are unchanged. The application uses Terminal's actual
+The application uses Terminal's actual
 `TerminalPage`, `TerminalTab`, `Pane`, tab/titlebar controls, menus, settings editor,
 themes, resources, animations and native `IslandWindow`/`NonClientIslandWindow` host.
+The original XAML layouts and controls are retained. The dark Settings page's
+background resource is adjusted to `#0c0c0c`, matching Terminal's dark Settings tab
+and default Campbell background. Browser tabs obtain their colors from Terminal's
+existing profile and color-scheme resolver, including profile tab-color overrides.
 
 `BrowserPaneContent` implements the existing `IPaneContent` extension point. A
 WinUI WebView2 occupies the content area, with a standard XAML address input above

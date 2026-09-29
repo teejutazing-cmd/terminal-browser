@@ -11,15 +11,17 @@ using namespace winrt::Microsoft::Web::WebView2::Core;
 
 namespace winrt::TerminalApp::implementation
 {
-    BrowserPaneContent::BrowserPaneContent(const winrt::hstring& url) :
-        _url(terminal_browser::NormalizeUrl(url))
+    BrowserPaneContent::BrowserPaneContent(const winrt::hstring& url,
+                                           const CascadiaSettings& settings,
+                                           const winrt::guid& profileGuid) :
+        _url(terminal_browser::NormalizeUrl(url)),
+        _profileGuid(profileGuid)
     {
         if (_url.empty())
         {
             _url = L"https://example.com";
         }
-        const auto resources = Application::Current().Resources();
-        _root.Background(resources.Lookup(winrt::box_value(L"UnfocusedBorderBrush")).as<Media::Brush>());
+        UpdateSettings(settings);
         RowDefinition addressRow;
         addressRow.Height({ 1, GridUnitType::Auto });
         _root.RowDefinitions().Append(addressRow);
@@ -60,6 +62,23 @@ namespace winrt::TerminalApp::implementation
                 self->_Initialize();
             }
         });
+    }
+
+    void BrowserPaneContent::UpdateSettings(const CascadiaSettings& settings)
+    {
+        const auto profile = settings.FindProfile(_profileGuid);
+        const auto appearance = TerminalSettings::CreateWithProfile(
+            settings, profile ? profile : settings.ProfileDefaults(), nullptr).DefaultSettings();
+
+        // Feed the original tab theme's "terminalBackground" color from the
+        // same profile/scheme resolver used by TermControl, without a backend.
+        _root.Background(Media::SolidColorBrush{ til::color{ appearance.DefaultBackground() } });
+        _tabColor = nullptr;
+        if (const auto color = appearance.TabColor())
+        {
+            _tabColor = static_cast<Windows::UI::Color>(til::color{ color.Value() });
+        }
+        TabColorChanged.raise(*this, nullptr);
     }
 
     winrt::fire_and_forget BrowserPaneContent::_Initialize()
@@ -167,6 +186,7 @@ namespace winrt::TerminalApp::implementation
     INewContentArgs BrowserPaneContent::GetNewTerminalArgs(const BuildStartupKind /*kind*/) const
     {
         NewTerminalArgs args;
+        args.Profile(winrt::to_hstring(_profileGuid));
         args.Commandline(_url);
         return args;
     }

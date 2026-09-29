@@ -32,7 +32,7 @@
                         -->
 
                         <ResourceDictionary x:Key="Dark">
-                            <Color x:Key="SettingsPageBackground">#282828</Color>
+                            <Color x:Key="SettingsPageBackground">#0c0c0c</Color>
                             <Color x:Key="SettingsPageMicaBackground">#00000000</Color>
                         </ResourceDictionary>
 
