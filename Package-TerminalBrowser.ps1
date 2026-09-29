@@ -6,7 +6,7 @@ if (!(Test-Path "$hostOutput/Microsoft.Web.WebView2.Core.dll")) { throw 'WebView
 if (!(Test-Path "$hostOutput/resources.pri") -or (Get-Item "$hostOutput/resources.pri").Length -lt 1000000) { throw 'Build the complete unpackaged resource layout first.' }
 New-Item $Destination -ItemType Directory -Force | Out-Null
 Get-ChildItem $hostOutput -File | Where-Object Extension -In '.exe','.dll','.pri','.winmd','.json' | Copy-Item -Destination $Destination -Force
-Get-ChildItem $hostOutput -Directory | Where-Object Name -NE '_xaml' | Copy-Item -Destination $Destination -Recurse -Force
+Get-ChildItem $hostOutput -Directory | Where-Object Name -In 'TerminalApp','Microsoft.Terminal.Control','Microsoft.Terminal.Settings.Editor','Microsoft.Terminal.UI.Markdown' | Copy-Item -Destination $Destination -Recurse -Force
 Copy-Item "$hostOutput/_xaml/Microsoft.UI.Xaml" -Destination $Destination -Recurse -Force
 New-Item (Join-Path $Destination '.portable') -ItemType File -Force | Out-Null
 New-Item (Join-Path $Destination 'settings') -ItemType Directory -Force | Out-Null
