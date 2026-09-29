@@ -6,7 +6,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>WindowsTerminal</RootNamespace>
     <ProjectName>WindowsTerminal</ProjectName>
-    <TargetName>WindowsTerminal</TargetName>
+    <TargetName>TerminalBrowser</TargetName>
     <ConfigurationType>Application</ConfigurationType>
     <OpenConsoleUniversalApp>false</OpenConsoleUniversalApp>
     <ApplicationType>Windows Store</ApplicationType>
@@ -190,12 +190,12 @@
       <DependencyPriFiles Include="@(WTPackagingOutputsFromDependencyProjects->Distinct())" Condition="'%(WTPackagingOutputsFromDependencyProjects.Extension)'=='.pri' and '%(WTPackagingOutputsFromDependencyProjects.Filename)'!='Microsoft.UI.Xaml'"/>
       <DependencyPriFiles Include="@(WTFullXamlAssets)" Condition="'%(WTFullXamlAssets.Extension)'=='.pri'" />
       <DependencyExecutables Include="@(WTFullXamlAssets)" Condition="'%(WTFullXamlAssets.Extension)'=='.dll'" />
-      <DependencyExecutables Include="$(OutDir)\..\OpenConsole.exe" />
+      <!-- Browser tabs have no console backend to ship. -->
     </ItemGroup>
   </Target>
   <Target Name="_WTPrepareUnpackagedLayoutForRun" Inputs="@(DependencyPriFiles);@(DependencyExecutables)" Outputs="$(OutDir)\stamp" DependsOnTargets="_WTCalculateUnpackagedRunFiles">
     <Copy SourceFiles="@(DependencyExecutables)" DestinationFolder="$(OutDir)" UseHardlinksIfPossible="true" SkipUnchangedFiles="true" />
-    <Exec Command="pwsh.exe -noprofile -c &quot;$(OpenConsoleDir)\build\scripts\Merge-PriFiles.ps1&quot; -Path &quot;@(DependencyPriFiles, '&quot;, &quot;')&quot; -OutputPath &quot;$(OutDir)resources.pri&quot;" />
+    <Exec Command="pwsh.exe -noprofile -c &quot;&amp; '$(OpenConsoleDir)\build\scripts\Merge-PriFiles.ps1' -Path '@(DependencyPriFiles, '%27, %27')' -OutputPath '$(OutDir)resources.pri' -MakePriPath '$(WindowsSdkDir)bin\$(WindowsTargetPlatformVersion)\x64\makepri.exe'&quot;" />
     <Touch Files="$(OutDir)\stamp" AlwaysCreate="true" />
   </Target>
 

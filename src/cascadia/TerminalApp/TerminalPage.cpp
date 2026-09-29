@@ -16,6 +16,7 @@
 #include "DebugTapConnection.h"
 #include "SettingsPaneContent.h"
 #include "ScratchpadContent.h"
+#include "BrowserPaneContent.h"
 #include "SnippetsPaneContent.h"
 #include "MarkdownPaneContent.h"
 #include "TabRowControl.h"
@@ -2166,6 +2167,10 @@ namespace winrt::TerminalApp::implementation
     {
         if (const auto terminalTab{ _GetFocusedTabImpl() })
         {
+            if (!terminalTab->GetActiveTerminalControl())
+            {
+                return;
+            }
             uint32_t realRowsToScroll;
             if (rowsToScroll == nullptr)
             {
@@ -2202,7 +2207,7 @@ namespace winrt::TerminalApp::implementation
 
         auto focusedTab{ _GetFocusedTabImpl() };
 
-        if (!focusedTab)
+        if (!focusedTab || focusedTab->GetActiveContent().try_as<BrowserPaneContent>())
         {
             return false;
         }
@@ -2503,6 +2508,13 @@ namespace winrt::TerminalApp::implementation
                                   const float splitSize,
                                   std::shared_ptr<Pane> newPane)
     {
+        // The browser contract is one WebView2 per tab. Keep the upstream
+        // command/menu, but promote browser split requests to whole tabs.
+        if (newPane && newPane->GetContent().try_as<BrowserPaneContent>())
+        {
+            _CreateNewTabFromPane(newPane);
+            return;
+        }
         auto activeTab = tab;
         // Clever hack for a crash in startup, with multiple sub-commands. Say
         // you have the following commandline:
@@ -3472,8 +3484,44 @@ namespace winrt::TerminalApp::implementation
         const auto& newTerminalArgs{ contentArgs.try_as<NewTerminalArgs>() };
         if (contentArgs == nullptr || newTerminalArgs != nullptr || contentArgs.Type().empty())
         {
-            // Terminals are of course special, and have to deal with debug taps, duplicating the tab, etc.
-            return _MakeTerminalPane(newTerminalArgs, sourceTab, existingConnection);
+            // Preserve the original Pane/TerminalTab shell; no terminal backend
+            // or shell process is needed for browser content.
+            winrt::hstring url = newTerminalArgs ? newTerminalArgs.Commandline() : L"";
+            if (url.empty() && sourceTab)
+            {
+                if (const auto tab = sourceTab.try_as<TerminalTab>())
+                {
+                    if (const auto active = tab->GetActiveContent())
+                    {
+                        if (const auto args = active.GetNewTerminalArgs(BuildStartupKind::None).try_as<NewTerminalArgs>())
+                        {
+                            url = args.Commandline();
+                        }
+                    }
+                }
+            }
+            if (url.empty())
+            {
+                if (const auto profile = _settings.GetProfileForArgs(newTerminalArgs))
+                {
+                    url = profile.Commandline();
+                }
+            }
+            if (existingConnection)
+            {
+                existingConnection.Close();
+            }
+            const auto browser = winrt::make_self<BrowserPaneContent>(url);
+            browser->NewTabRequested([weak = get_weak()](const auto&, const winrt::hstring& target) {
+                if (const auto page = weak.get())
+                {
+                    NewTerminalArgs args;
+                    args.Commandline(target);
+                    page->_CreateNewTabFromPane(page->_MakePane(args));
+                }
+            });
+            browser->GetRoot().KeyDown({ get_weak(), &TerminalPage::_KeyDownHandler });
+            return std::make_shared<Pane>(*browser);
         }
 
         IPaneContent content{ nullptr };

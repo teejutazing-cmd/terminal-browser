@@ -69,6 +69,12 @@
   </ItemGroup>
   <!-- ========================= Project References ======================== -->
   <ItemGroup>
+    <!-- This dependency was only declared by the upstream solution. Keep
+         standalone host-project builds correctly ordered as well. -->
+    <ProjectReference Include="$(OpenConsoleDir)src\host\proxy\Host.Proxy.vcxproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
     <!--
       the packaging project won't recurse through our dependencies, you have to
       make sure that if you add a cppwinrt dependency to any of these projects,

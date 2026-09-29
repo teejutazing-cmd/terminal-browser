@@ -66,29 +66,7 @@ namespace winrt::TerminalApp::implementation
     HRESULT TerminalPage::_OpenNewTab(const INewContentArgs& newContentArgs)
     try
     {
-        if (const auto& newTerminalArgs{ newContentArgs.try_as<NewTerminalArgs>() })
-        {
-            const auto profile{ _settings.GetProfileForArgs(newTerminalArgs) };
-            // GH#11114: GetProfileForArgs can return null if the index is higher
-            // than the number of available profiles.
-            if (!profile)
-            {
-                return S_FALSE;
-            }
-            const auto settings{ TerminalSettings::CreateWithNewTerminalArgs(_settings, newTerminalArgs, *_bindings) };
-
-            // Try to handle auto-elevation
-            if (_maybeElevate(newTerminalArgs, settings, profile))
-            {
-                return S_OK;
-            }
-            // We can't go in the other direction (elevated->unelevated)
-            // unfortunately. This seems to be due to Centennial quirks. It works
-            // unpackaged, but not packaged.
-        }
-
-        // This call to _MakePane won't return nullptr, we already checked that
-        // case above with the _maybeElevate call.
+        // Browser content has no process profile to elevate.
         _CreateNewTabFromPane(_MakePane(newContentArgs, nullptr));
         return S_OK;
     }

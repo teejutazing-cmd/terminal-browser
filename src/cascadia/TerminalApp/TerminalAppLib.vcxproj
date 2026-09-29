@@ -169,6 +169,8 @@
     <ClInclude Include="TerminalPaneContent.h">
       <DependentUpon>TerminalPaneContent.idl</DependentUpon>
     </ClInclude>
+    <ClInclude Include="BrowserPaneContent.h" />
+    <ClInclude Include="BrowserUrl.h" />
     <ClInclude Include="ScratchpadContent.h">
       <DependentUpon>TerminalPaneContent.idl</DependentUpon>
     </ClInclude>
@@ -292,6 +294,7 @@
     <ClCompile Include="TerminalPaneContent.cpp">
       <DependentUpon>TerminalPaneContent.idl</DependentUpon>
     </ClCompile>
+    <ClCompile Include="BrowserPaneContent.cpp" />
     <ClCompile Include="ScratchpadContent.cpp">
       <DependentUpon>TerminalPaneContent.idl</DependentUpon>
     </ClCompile>

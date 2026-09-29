@@ -4,13 +4,15 @@
     This file contains targets that override behavior in Microsoft.UI.Xaml and
     related packages.
 
-    For example: All XAML needs is a reference to WebView2; it does not need the
-    DLL and it does not need for us to copy the WinMD into the output folder. It
-    also doesn't require the WebView2 loader since we're not actually using
-    WebView2. Therefore, we can get away with *not including the WebView2
-    package* and only adding a reference to its winmd.
+    Most projects need only WebView2 metadata. The browser host also needs the
+    WinRT implementation and its activation manifest. The WinRT component
+    statically includes the loader, so no separate WebView2Loader is required.
   -->
   <ItemGroup>
-    <Reference Include="$(WebView2PackageRoot)\lib\Microsoft.Web.WebView2.Core.winmd" />
+    <Reference Include="$(WebView2PackageRoot)\lib\Microsoft.Web.WebView2.Core.winmd">
+      <Implementation Condition="'$(ProjectName)' == 'WindowsTerminal'">Microsoft.Web.WebView2.Core.dll</Implementation>
+    </Reference>
+    <ReferenceCopyLocalPaths Include="$(WebView2PackageRoot)\runtimes\win-$(Platform)\native_uap\Microsoft.Web.WebView2.Core.dll"
+                             Condition="'$(ProjectName)' == 'WindowsTerminal'" />
   </ItemGroup>
 </Project>

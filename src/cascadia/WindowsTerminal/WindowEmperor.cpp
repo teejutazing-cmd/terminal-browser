@@ -323,7 +323,7 @@ void WindowEmperor::HandleCommandlineArgs(int nCmdShow)
 #elif defined(WT_BRANDING_CANARY)
     windowClassName.append(L"Windows Terminal Canary");
 #else
-    windowClassName.append(L"Windows Terminal Dev");
+    windowClassName.append(L"Terminal Browser Dev");
 #endif
     if (Utils::IsRunningElevated())
     {

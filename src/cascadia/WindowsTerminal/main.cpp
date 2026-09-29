@@ -85,6 +85,11 @@ static void EnsureNativeArchitecture()
 
 int __stdcall wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int nCmdShow)
 {
+    // Keep the browser profile beside this fork, independent of installed Terminal.
+    std::filesystem::path browserData{ wil::GetModuleFileNameW<std::wstring>(nullptr) };
+    browserData.replace_filename(L"BrowserData");
+    SetEnvironmentVariableW(L"WEBVIEW2_USER_DATA_FOLDER", browserData.c_str());
+
     TraceLoggingRegister(g_hWindowsTerminalProvider);
     ::Microsoft::Console::ErrorReporting::EnableFallbackFailureReporting(g_hWindowsTerminalProvider);
 

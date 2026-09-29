@@ -236,6 +236,10 @@ namespace winrt::TerminalApp::implementation
                 // that our taskbar progress changed.
                 _UpdateProgressState();
             }
+            else if (const auto content = GetActiveContent())
+            {
+                content.Focus(_focusState);
+            }
             // When we gain focus, remove the bell indicator if it is active
             if (_tabStatus.BellIndicator())
             {
@@ -426,9 +430,11 @@ namespace winrt::TerminalApp::implementation
     {
         ASSERT_UI_THREAD();
 
-        auto control = GetActiveTerminalControl();
-        const auto currentOffset = control.ScrollOffset();
-        control.ScrollViewport(::base::ClampAdd(currentOffset, delta));
+        if (const auto control = GetActiveTerminalControl())
+        {
+            const auto currentOffset = control.ScrollOffset();
+            control.ScrollViewport(::base::ClampAdd(currentOffset, delta));
+        }
     }
 
     // Method Description:

@@ -5,7 +5,7 @@
 
 constexpr std::wstring_view WtExe{ L"wt.exe" };
 constexpr std::wstring_view WtdExe{ L"wtd.exe" };
-constexpr std::wstring_view WindowsTerminalExe{ L"WindowsTerminal.exe" };
+constexpr std::wstring_view WindowsTerminalExe{ L"TerminalBrowser.exe" };
 constexpr std::wstring_view LocalAppDataAppsPath{ L"%LOCALAPPDATA%\\Microsoft\\WindowsApps\\" };
 constexpr std::wstring_view ElevateShimExe{ L"elevate-shim.exe" };
 

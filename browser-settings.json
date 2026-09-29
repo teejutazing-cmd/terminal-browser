@@ -1,0 +1,24 @@
+{
+    "$schema": "https://aka.ms/terminal-profiles-schema",
+    "defaultProfile": "{b0469078-591c-476d-a217-7b36f779ca18}",
+    "disabledProfileSources": [
+        "Windows.Terminal.PowershellCore", "Windows.Terminal.Wsl",
+        "Windows.Terminal.Azure", "Windows.Terminal.VisualStudio",
+        "Windows.Terminal.SSH"
+    ],
+    "showTabsInTitlebar": true,
+    "alwaysShowTabs": true,
+    "initialCols": 140,
+    "initialRows": 38,
+    "confirmCloseAllTabs": false,
+    "profiles": {
+        "defaults": { "icon": "\uE774" },
+        "list": [
+            { "guid": "{b0469078-591c-476d-a217-7b36f779ca18}", "name": "Browser", "commandline": "https://example.com" },
+            { "guid": "{dfb929ea-25f9-4d8e-94f5-78eef24e7d69}", "name": "Microsoft Learn", "commandline": "https://learn.microsoft.com" },
+            { "guid": "{c15c4bea-1845-410c-b22e-753269c25a45}", "name": "GitHub", "commandline": "https://github.com" },
+            { "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}", "hidden": true },
+            { "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}", "hidden": true }
+        ]
+    }
+}
